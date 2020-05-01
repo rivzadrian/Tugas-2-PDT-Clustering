@@ -17,7 +17,7 @@ dbscan::kNNdistplot(abln.numerikscale, k =  8)
 abline(h = 1.5, lty = 2)
 
 library(fpc)
-outlier.dbscan <- dbscan(abln.numerikscale, eps=1.5, MinPts = 8)
+outlier.dbscan <- dbscan(abln.numerikscale, eps=2, MinPts = 8)
 outliers <- which(outlier.dbscan$cluster == 0)
 
 print(outliers)
@@ -38,7 +38,7 @@ library(DMwR)
 outlier.scores <- lofactor(abln.numerikscale, k=8)
 plot(density(outlier.scores))
 
-outlier <- order(outlier.scores, decreasing=TRUE)[1:8]
+outlier <- order(outlier.scores, decreasing=TRUE)[1:5]
 print(outlier)
 print(abln.numerikscale[outlier,])
 
