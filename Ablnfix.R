@@ -5,6 +5,21 @@ abln <- data.frame(abln)
 colnames(abln) <- c("sex", "length", "diameter", "height", "wholeWeight", "shuckedWeight","visceraWeight",
                     "shellWeight","rings")
 
+##eksplorasi data
+##heatmap
+library(ggcorrplot)
+corr <- round(cor(abalone[,c(2,3,4,5,6,7,8,9)]), 2)
+ggcorrplot(corr, hc.order = TRUE, 
+           type = "lower", 
+           lab = TRUE, 
+           lab_size = 3, 
+           method="circle", 
+           colors = c("tomato2", "white", "springgreen3"), 
+           title="Correlogram of Abalone", 
+           ggtheme=theme_bw)
+##plot
+plot(x=abaln$sex, y=abaln$y, xlab = "sex", ylab="Probabilitas banyaknya jenis kelamin", ylim=c(0,3))
+
 ##Ngambil data numerik 
 abln.numerik <- abln[2:9]
 View(abln.numerik)
