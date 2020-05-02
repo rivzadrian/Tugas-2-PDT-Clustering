@@ -76,7 +76,17 @@ col <- rep("black", n)
 col[outlier] <- "red"
 pairs(abln.numerikscale, pch=pch, col=col)
 
-abln.nooutlier <- abln.numerikscale[-(outlier),]
+
+#hapus outlier
+outlier <- c(outlier.lof, outliers.db )
+outlier
+n_occur <- data.frame(table(outlier))
+n_occur[n_occur$Freq > 1,]
+outlier.fix = 0
+n_occur
+outlier.fix<-subset(outliers.db, outliers.db%in% outlier.lof)#men subset yang sama dr 2 vector
+abln.nooutlier <- abln.numerikscale[-(outlier.fix),]
+
 
 ##CLUSTERING
 #K-Means
