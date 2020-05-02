@@ -63,3 +63,10 @@ pairs(abln.numerikscale, pch=pch, col=col)
 
 ### Drop outlier
 abln.nooutlier <- abln.numerikscale[-(outlier),]
+
+##CLUSTERING
+#K-Means 
+cluster.kmeans <- kmeans(abln.nooutlier, center = 3, nstart = 25)
+cluster.kmeans$cluster
+
+fviz_cluster(Clustering, geom = "point", data = abln.nooutlier)+ggtitle("K=3")
