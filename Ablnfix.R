@@ -92,5 +92,5 @@ abln.nooutlier <- abln.numerikscale[-(outlier.fix),]
 #K-Means
 cluster.kmeans <- kmeans(abln.nooutlier, center = 3, nstart = 25)
 cluster.kmeans$cluster
-
-fviz_cluster(Clustering, geom = "point", data = abln.nooutlier)+ggtitle("K=3")
+library(factoextra)
+fviz_cluster(cluster.kmeans, geom = "point", data = abln.nooutlier)+ggtitle("K=3")
