@@ -5,7 +5,22 @@ abln <- data.frame(abln)
 colnames(abln) <- c("sex", "length", "diameter", "height", "wholeWeight", "shuckedWeight","visceraWeight",
                     "shellWeight","rings")
 
-##Ngambil data numerik 
+##eksplorasi data
+##heatmap
+library(ggcorrplot)
+corr <- round(cor(abln[,c(2,3,4,5,6,7,8,9)]), 2)
+ggcorrplot(corr, hc.order = TRUE,
+           type = "lower",
+           lab = TRUE,
+           lab_size = 3,
+           method="circle",
+           colors = c("tomato2", "white", "springgreen3"),
+           title="Correlogram of Abalone",
+           ggtheme=theme_bw)
+##plot
+plot(x=abln$sex, y=abln$y, xlab = "sex", ylab="Probabilitas banyaknya jenis kelamin", ylim=c(0,3))
+
+##Ngambil data numerik
 abln.numerik <- abln[2:9]
 View(abln.numerik)
 abln.numerikscale <- scale(abln.numerik)
@@ -61,12 +76,11 @@ col <- rep("black", n)
 col[outlier] <- "red"
 pairs(abln.numerikscale, pch=pch, col=col)
 
-### Drop outlier
-outlier <- c(outlier.lof, outliers.db )
-outlier
-n_occur <- data.frame(table(outlier))
-n_occur[n_occur$Freq > 1,]
-outlier.fix = 0
-n_occur
-outlier.fix<-subset(outliers.db, outliers.db%in% outlier.lof)#men subset yang sama dr 2 vector
-abln.nooutlier <- abln.numerikscale[-(outlier.fix),]
+abln.nooutlier <- abln.numerikscale[-(outlier),]
+
+##CLUSTERING
+#K-Means
+cluster.kmeans <- kmeans(abln.nooutlier, center = 3, nstart = 25)
+cluster.kmeans$cluster
+
+fviz_cluster(Clustering, geom = "point", data = abln.nooutlier)+ggtitle("K=3")
