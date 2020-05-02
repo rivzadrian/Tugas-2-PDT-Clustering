@@ -11,7 +11,19 @@ View(abln.numerik)
 abln.numerikscale <- scale(abln.numerik)
 View(abln.numerikscale)
 
-#identifikasi outlier
+#identifikasi outlier (1.8)
+library(dbscan)
+dbscan::kNNdistplot(abln.numerikscale, k =  8)
+abline(h = 1.8, lty = 2)
+
+library(fpc)
+outlier.dbscan <- dbscan(abln.numerikscale, eps=1.8, MinPts = 8)
+outliers <- which(outlier.dbscan$cluster == 0)
+
+print(outliers)
+print(abln.numerikscale[outliers,])
+
+#identifikasi outlier (2)
 library(dbscan)
 dbscan::kNNdistplot(abln.numerikscale, k =  8)
 abline(h = 1.5, lty = 2)
@@ -48,3 +60,6 @@ pch[outlier] <- "+"
 col <- rep("black", n)
 col[outlier] <- "red"
 pairs(abln.numerikscale, pch=pch, col=col)
+
+### Drop outlier
+abln.nooutlier <- abln.numerikscale[-(outlier),]
