@@ -26,11 +26,11 @@ print(abln.numerikscale[outliers,])
 #identifikasi outlier (2)
 library(dbscan)
 dbscan::kNNdistplot(abln.numerikscale, k =  8)
-abline(h = 1.5, lty = 2)
+abline(h = 2, lty = 2)
 
 library(fpc)
 outlier.dbscan <- dbscan(abln.numerikscale, eps=2, MinPts = 8)
-outliers <- which(outlier.dbscan$cluster == 0)
+outliers.db <- which(outlier.dbscan$cluster == 0)
 
 print(outliers)
 print(abln.numerikscale[outliers,])
@@ -50,7 +50,7 @@ library(DMwR)
 outlier.scores <- lofactor(abln.numerikscale, k=8)
 plot(density(outlier.scores))
 
-outlier <- order(outlier.scores, decreasing=TRUE)[1:5]
+outlier.lof <- order(outlier.scores, decreasing=TRUE)[1:5]
 print(outlier)
 print(abln.numerikscale[outlier,])
 
@@ -62,4 +62,11 @@ col[outlier] <- "red"
 pairs(abln.numerikscale, pch=pch, col=col)
 
 ### Drop outlier
-abln.nooutlier <- abln.numerikscale[-(outlier),]
+outlier <- c(outlier.lof, outliers.db )
+outlier
+n_occur <- data.frame(table(outlier))
+n_occur[n_occur$Freq > 1,]
+outlier.fix = 0
+n_occur
+outlier.fix<-subset(outliers.db, outliers.db%in% outlier.lof)#men subset yang sama dr 2 vector
+abln.nooutlier <- abln.numerikscale[-(outlier.fix),]
