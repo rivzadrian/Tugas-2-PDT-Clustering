@@ -8,7 +8,7 @@ colnames(abln) <- c("sex", "length", "diameter", "height", "wholeWeight", "shuck
 ##eksplorasi data
 ##heatmap
 library(ggcorrplot)
-corr <- round(cor(abalone[,c(2,3,4,5,6,7,8,9)]), 2)
+corr <- round(cor(abaln[,c(2,3,4,5,6,7,8,9)]), 2)
 ggcorrplot(corr, hc.order = TRUE, 
            type = "lower", 
            lab = TRUE, 
