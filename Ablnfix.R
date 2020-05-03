@@ -118,13 +118,44 @@ fviz_nbclust(abln.nooutlier, FUN = kmeans, method = "wss") +
 
 ##CLUSTERING
 ####K-Means####
-cluster.kmeans <- kmeans(abln.nooutlier, center = 3, nstart = 25)
+cluster.kmeans <- kmeans(abln.nooutlier, center = 4, nstart = 25)
 cluster.kmeans$cluster
 
+### Plot KMeans
+plot(abln.nooutlier,
+     col = cluster.kmeans$cluster)
+
+##Mengetahui Karakteristik Cluster
+abln.character = data.frame(abln.nooutlier, cluster.kmeans$cluster)
+View(abln.character)
+aggregate(abln.character[-1],by=list(abln.character$cluster.kmeans.cluster),FUN=mean)
+
+###METODE HIERARKI###
+#Hierarki Agglomerative Clustering
+library(cluster)
+cluster.agnes <- agnes(x=abln.nooutlier,
+                       stand = TRUE,
+                       metric = "euclidean",
+                       method = "average")
+
+#Menampilkan Hierarki Agglomerative Clustering
 library(factoextra)
-clust <- cutree(cluster.agnes, k=3)
+fviz_dend(cluster.agnes, cex = 0.4, k = 4)
+
+#Plot Data Point Agglomerative Clustering
+clust <- cutree(cluster.agnes, k = 4)
 fviz_cluster(list(data = abln.nooutlier, cluster = clust))
-fviz_cluster(Clustering, geom = "point", data = abln.nooutlier)+ggtitle("K=3")
+
+#Hierarki Divisive Clustering
+cluster.diana <- diana(x=abln.nooutlier,
+                       stand = TRUE,
+                       metric = "euclidean")
+fviz_dend(cluster.diana, cex = 0.6, k = 4)
+
+#Plot Data Point Divisive Clustering
+clust.diana <- cutree(cluster.diana, k = 4)
+fviz_cluster(list(data = abln.nooutlier, cluster = clust.diana))
+
 
 ####Pra proses sebelum PCA untuk VQ####
 abln1 <- read.csv("Tugas Klp #2 Data.csv")
