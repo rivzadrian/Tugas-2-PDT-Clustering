@@ -103,13 +103,17 @@ fviz_nbclust(abln.nooutlier, FUN = kmeans, method = "wss") +
 
 ##CLUSTERING
 ####K-Means####
-cluster.kmeans <- kmeans(abln.nooutlier, center = 3, nstart = 25)
+cluster.kmeans <- kmeans(abln.nooutlier, center = 4, nstart = 25)
 cluster.kmeans$cluster
 
-library(factoextra)
-clust <- cutree(cluster.agnes, k=3)
-fviz_cluster(list(data = abln.nooutlier, cluster = clust))
-fviz_cluster(Clustering, geom = "point", data = abln.nooutlier)+ggtitle("K=3")
+### Plot KMeans
+plot(abln.nooutlier,
+     col = cluster.kmeans$cluster)
+
+##Mengetahui Karakteristik Cluster
+abln.character = data.frame(abln.nooutlier, cluster.kmeans$cluster)
+View(abln.character)
+aggregate(abln.character[-1],by=list(abln.character$cluster.kmeans.cluster),FUN=mean)
 
 ###METODE HIERARKI###
 #Hierarki Agglomerative Clustering
