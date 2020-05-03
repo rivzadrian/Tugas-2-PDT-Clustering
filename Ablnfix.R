@@ -94,7 +94,7 @@ SSE <- sapply(1:9, function(k) {
 
 plot(1:9, SSE, type="b", xlab = "k", 
      ylab = "Within grops sum of squares")
-
+SSE
 
 library(factoextra)
 fviz_nbclust(abln.nooutlier, FUN = kmeans, method = "wss") +
@@ -362,4 +362,44 @@ outAbln <- rbind(comp, newData)
 
 
 p <- ggplot(outAbln, aes(height, shuckedWeight))
+p + geom_point(aes(color = factor(sex)), size = 2) + theme(legend.position="top")
+
+####VQ Implementation on shuckedwieight and rings####
+#Parameters
+alphaInit <- 0.95
+alphaLast <- 0
+numLoops <- 10000
+comp <- as.data.frame(abln_num_fix)
+newAbln <- data.frame(comp$shuckedWeight,comp$rings)
+newAbln
+#Saving the output into a txt file.
+#out <- capture.output(  VQ(newIris, 3, alphaInit, alphaLast, numLoops)  )
+#cat("Output", out, file="C:/output.txt", sep="\n", append=FALSE)
+newAbln
+protos <- VQ(newAbln, 3, alphaInit, alphaLast, numLoops)
+protos
+cat("Prototypes: \n")
+print(protos)
+cat("\n")
+
+summary(abln_num_fix)
+#This is just for plotting purpose
+z <- 0
+w <- 0
+e <- 0
+v <- 0
+g <- 0
+u <- 0
+s <- "prototypes"
+newData <- data.frame(shuckedWeight = protos$x, rings = protos$y, length = z, wholeWeight = w, diameter = e, 
+                      visceraWeight = v, shellWeight = g, height = u, sex = s)
+newData
+
+comp
+
+outAbln <- rbind(comp, newData)
+
+
+
+p <- ggplot(outAbln, aes(rings, height))
 p + geom_point(aes(color = factor(sex)), size = 2) + theme(legend.position="top")
