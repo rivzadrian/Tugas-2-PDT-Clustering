@@ -111,6 +111,33 @@ clust <- cutree(cluster.agnes, k=3)
 fviz_cluster(list(data = abln.nooutlier, cluster = clust))
 fviz_cluster(Clustering, geom = "point", data = abln.nooutlier)+ggtitle("K=3")
 
+###METODE HIERARKI###
+#Hierarki Agglomerative Clustering
+library(cluster)
+cluster.agnes <- agnes(x=abln.nooutlier,
+                       stand = TRUE,
+                       metric = "euclidean",
+                       method = "average")
+
+#Menampilkan Hierarki Agglomerative Clustering
+library(factoextra)
+fviz_dend(cluster.agnes, cex = 0.4, k = 4)
+
+#Plot Data Point Agglomerative Clustering
+clust <- cutree(cluster.agnes, k = 4)
+fviz_cluster(list(data = abln.nooutlier, cluster = clust))
+
+#Hierarki Divisive Clustering
+cluster.diana <- diana(x=abln.nooutlier,
+                       stand = TRUE,
+                       metric = "euclidean")
+fviz_dend(cluster.diana, cex = 0.6, k = 4)
+
+#Plot Data Point Divisive Clustering
+clust.diana <- cutree(cluster.diana, k = 4)
+fviz_cluster(list(data = abln.nooutlier, cluster = clust.diana))
+
+
 ####Pra proses sebelum PCA untuk VQ####
 abln1 <- read.csv("Tugas Klp #2 Data.csv")
 abln1 <- data.frame(abln1)
