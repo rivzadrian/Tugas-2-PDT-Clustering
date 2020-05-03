@@ -87,13 +87,29 @@ n_occur
 outlier.fix<-subset(outliers.db, outliers.db%in% outlier.lof)#men subset yang sama dr 2 vector
 abln.nooutlier <- abln.numerikscale[-(outlier.fix),]
 
+## Sum Squared Error (SSE)
+SSE <- sapply(1:9, function(k) {
+  kmeans(abln.nooutlier, centers = k, nstart = 25)$tot.withinss
+})
+
+plot(1:9, SSE, type="b", xlab = "k", 
+     ylab = "Within grops sum of squares")
+
+
+library(factoextra)
+fviz_nbclust(abln.nooutlier, FUN = kmeans, method = "wss") +
+  geom_vline(xintercept = 4, linetype = 2) + 
+  labs(subtitle = "Elbow Method")
 
 ##CLUSTERING
 ####K-Means####
 cluster.kmeans <- kmeans(abln.nooutlier, center = 3, nstart = 25)
 cluster.kmeans$cluster
+
 library(factoextra)
-fviz_cluster(cluster.kmeans, geom = "point", data = abln.nooutlier)+ggtitle("K=3")
+clust <- cutree(cluster.agnes, k=3)
+fviz_cluster(list(data = abln.nooutlier, cluster = clust))
+fviz_cluster(Clustering, geom = "point", data = abln.nooutlier)+ggtitle("K=3")
 
 ####Pra proses sebelum PCA untuk VQ####
 abln1 <- read.csv("Tugas Klp #2 Data.csv")
