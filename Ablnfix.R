@@ -20,6 +20,21 @@ ggcorrplot(corr, hc.order = TRUE,
 ##plot
 plot(x=abln$sex, y=abln$y, xlab = "sex", ylab="Probabilitas banyaknya jenis kelamin", ylim=c(0,3))
 
+#Mencari duplikasi data
+library(dplyr)
+which(duplicated(abln))
+
+# Plot box sex diameter
+g <- ggplot(abln, aes(sex, diameter))
+g + geom_boxplot(varwidth=T, fill="plum") + 
+  labs(title="Box plot", 
+       subtitle="City Mileage grouped by Class of vehicle",
+       caption="Source: mpg",
+       x="Sex",
+       y="Diameter") + ylim(0,0.75)
+
+
+
 ##Ngambil data numerik####
 abln.numerik <- abln[2:9]
 View(abln.numerik)
@@ -233,14 +248,14 @@ VQ <- function(dataset, k, alphaI, alphaL, t)
   alphaRatio <- ( (alphaI - alphaL)/t )
   alpha <- (alphaI + alphaRatio)
   
-  #cat("Prototypes: \n")
-  #print(prototypes)
-  #cat("\n")
+  cat("Prototypes: \n")
+  print(prototypes)
+  cat("\n")
   
   #We move this prototypes 't' times.
   for(i in 1:t)
   {
-    #selRow <- ceiling(runif(1, 0, nrow(dataset)))
+    selRow <- ceiling(runif(1, 0, nrow(dataset)))
     selRow <- sample(1:nrow(dataset), size=1, replace=TRUE)
     
     dsX <- dataset[selRow, 1]
@@ -249,16 +264,16 @@ VQ <- function(dataset, k, alphaI, alphaL, t)
     #Select a point from 'x' dataset.
     dsPoint <- c(dsX, dsY)
     
-    #cat("Selected x point is (",dsX,", ",dsY,"). The ",selRow," set point\n")
+    cat("Selected x point is (",dsX,", ",dsY,"). The ",selRow," set point\n")
     
     alpha <- (alpha - alphaRatio)
     
-    #cat("Alpha is now:", alpha,"percent\n")
+    cat("Alpha is now:", alpha,"percent\n")
     
     #Find closest prototype from selected point.
     indexBMU <- findBMU(dsPoint, prototypes)
     
-    #cat("The",indexBMU,"prototype is the BMU (",prototypes[indexBMU, 1],",",prototypes[indexBMU, 2],")\n")
+    cat("The",indexBMU,"prototype is the BMU (",prototypes[indexBMU, 1],",",prototypes[indexBMU, 2],")\n")
     
     #Check for a correct bmu
     if(indexBMU >= 0)
@@ -297,7 +312,7 @@ cat("Prototypes: \n")
 print(protos)
 cat("\n")
 
-summary(abln_num_fix)
+summary(protos)
 #This is just for plotting purpose
 z <- 0
 w <- 0
@@ -376,7 +391,7 @@ newAbln
 #out <- capture.output(  VQ(newIris, 3, alphaInit, alphaLast, numLoops)  )
 #cat("Output", out, file="C:/output.txt", sep="\n", append=FALSE)
 newAbln
-protos <- VQ(newAbln, 3, alphaInit, alphaLast, numLoops)
+protos <- VQ(newAbln, 4, alphaInit, alphaLast, numLoops)
 protos
 cat("Prototypes: \n")
 print(protos)
@@ -397,9 +412,235 @@ newData
 
 comp
 
+newData
+
 outAbln <- rbind(comp, newData)
 
 
 
 p <- ggplot(outAbln, aes(rings, height))
 p + geom_point(aes(color = factor(sex)), size = 2) + theme(legend.position="top")
+
+shuck <- c(comp$shuckedWeight)
+rings <- c(comp$rings)
+
+shuck_rings <- data.frame(shuck,rings)
+
+distance<- dist()
+distance$
+
+
+cluster1 <- 0
+cluster2<- 0
+cluster3<- 0
+for (row in 1:nrow(comp)) {
+  distance <- dist(shuck_rings)
+  
+}
+
+
+####HVT Clustering (VQ) threshold 0.2####
+
+
+
+library("muHVT")
+set.seed(240)
+hvt.results <- list()
+hvt.results <- HVT(abln_num_fix,
+                   nclust = 4,
+                   depth = 1,
+                   quant.err = 0.2,
+                   projection.scale = 10,
+                   normalize = T,
+                   distance_metric = "L1_Norm",
+                   error_metric = "mean")
+
+plotHVT(hvt.results,
+        line.width = c(1.2), 
+        color.vec = c("#141B41"),
+        maxDepth = 1)
+
+hvt.results[[3]]$compression_summary
+
+hvtHmap(hvt.results, 
+        abln_num_fix, 
+        child.level = 1,
+        hmap.cols = "Quant.Error", 
+        line.width = c(0.2),
+        color.vec = c("#141B41"),
+        palette.color = 6,
+        centroid.size = 3,
+        show.points = T,
+        quant.error.hmap = 0.2,
+        nclust.hmap = 4)
+
+set.seed(240)
+hvt.results2 <- list()
+# depth=2 is used for level2 in the hierarchy
+hvt.results2 <- HVT(abln_num_fix,
+                    nclust = 4,
+                    depth = 2,
+                    quant.err = 0.2,
+                    projection.scale = 10,
+                    normalize = T,
+                    distance_metric = "L1_Norm",
+                    error_metric = "mean")
+plotHVT(hvt.results2, 
+        line.width = c(1.2, 0.8), 
+        color.vec = c("#141B41","#0582CA"),
+        maxDepth = 2)
+hvt.results2[[3]]$compression_summary
+
+set.seed(240)
+hvt.results3 <- list()
+# depth=3 is used for level3 in the hierarchy
+hvt.results3 <- HVT(abln_num_fix,
+                    nclust = 4,
+                    depth = 3,
+                    quant.err = 0.2,
+                    projection.scale = 10,
+                    normalize = T,
+                    distance_metric = "L1_Norm",
+                    error_metric = "mean")
+hvt.results3[[3]]$compression_summary
+
+set.seed(240)
+hvt.results4 <- list()
+# depth=3 is used for level4 in the hierarchy
+hvt.results4 <- HVT(abln_num_fix,
+                    nclust = 4,
+                    depth = 4,
+                    quant.err = 0.2,
+                    projection.scale = 10,
+                    normalize = T,
+                    distance_metric = "L1_Norm",
+                    error_metric = "mean")
+hvt.results4[[3]]$compression_summary
+
+hvtHmap(hvt.results4, 
+        trainComputers, 
+        child.level = 4,
+        hmap.cols = "Quant.Error", 
+        line.width = c(1.2,0.8,0.4,0.4),
+        color.vec = c("#141B41","#6369D1","#D8D2E1","#3F00FF"),
+        palette.color = 6,
+        show.points = T,
+        centroid.size = 1,
+        quant.error.hmap = 0.2,
+        nclust.hmap = 15)
+
+set.seed(240)
+hvt.results5 <- list()
+# depth=3 is used for level5 in the hierarchy
+hvt.results5 <- HVT(abln_num_fix,
+                    nclust = 4,
+                    depth = 5,
+                    quant.err = 0.2,
+                    projection.scale = 10,
+                    normalize = T,
+                    distance_metric = "L1_Norm",
+                    error_metric = "mean")
+hvt.results5[[3]]$compression_summary
+
+####HVT Clustering (VQ) threshold 0.5####
+
+
+
+library("muHVT")
+set.seed(240)
+hvt.results <- list()
+hvt.results <- HVT(abln_num_fix,
+                   nclust = 4,
+                   depth = 1,
+                   quant.err = 0.2,
+                   projection.scale = 10,
+                   normalize = T,
+                   distance_metric = "L1_Norm",
+                   error_metric = "mean")
+
+plotHVT(hvt.results,
+        line.width = c(1.2), 
+        color.vec = c("#141B41"),
+        maxDepth = 1)
+
+hvt.results[[3]]$compression_summary
+
+hvtHmap(hvt.results, 
+        abln_num_fix, 
+        child.level = 1,
+        hmap.cols = "Quant.Error", 
+        line.width = c(0.2),
+        color.vec = c("#141B41"),
+        palette.color = 6,
+        centroid.size = 3,
+        show.points = T,
+        quant.error.hmap = 0.2,
+        nclust.hmap = 4)
+
+set.seed(240)
+hvt.results2 <- list()
+# depth=2 is used for level2 in the hierarchy
+hvt.results2 <- HVT(abln_num_fix,
+                    nclust = 4,
+                    depth = 2,
+                    quant.err = 0.2,
+                    projection.scale = 10,
+                    normalize = T,
+                    distance_metric = "L1_Norm",
+                    error_metric = "mean")
+plotHVT(hvt.results2, 
+        line.width = c(1.2, 0.8), 
+        color.vec = c("#141B41","#0582CA"),
+        maxDepth = 2)
+hvt.results2[[3]]$compression_summary
+
+set.seed(240)
+hvt.results3 <- list()
+# depth=3 is used for level3 in the hierarchy
+hvt.results3 <- HVT(abln_num_fix,
+                    nclust = 4,
+                    depth = 3,
+                    quant.err = 0.2,
+                    projection.scale = 10,
+                    normalize = T,
+                    distance_metric = "L1_Norm",
+                    error_metric = "mean")
+hvt.results3[[3]]$compression_summary
+
+set.seed(240)
+hvt.results4 <- list()
+# depth=3 is used for level4 in the hierarchy
+hvt.results4 <- HVT(abln_num_fix,
+                    nclust = 4,
+                    depth = 4,
+                    quant.err = 0.2,
+                    projection.scale = 10,
+                    normalize = T,
+                    distance_metric = "L1_Norm",
+                    error_metric = "mean")
+hvt.results4[[3]]$compression_summary
+
+hvtHmap(hvt.results4, 
+        trainComputers, 
+        child.level = 4,
+        hmap.cols = "Quant.Error", 
+        line.width = c(1.2,0.8,0.4,0.4),
+        color.vec = c("#141B41","#6369D1","#D8D2E1","#3F00FF"),
+        palette.color = 6,
+        show.points = T,
+        centroid.size = 1,
+        quant.error.hmap = 0.2,
+        nclust.hmap = 15)
+
+set.seed(240)
+hvt.results5 <- list()
+# depth=3 is used for level5 in the hierarchy
+hvt.results5 <- HVT(abln_num_fix,
+                    nclust = 4,
+                    depth = 5,
+                    quant.err = 0.2,
+                    projection.scale = 10,
+                    normalize = T,
+                    distance_metric = "L1_Norm",
+                    error_metric = "mean")
+hvt.results5[[3]]$compression_summary
