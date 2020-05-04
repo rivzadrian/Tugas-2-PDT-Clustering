@@ -109,15 +109,21 @@ SSE <- sapply(1:9, function(k) {
 plot(1:9, SSE, type="b", xlab = "k",
      ylab = "Within grops sum of squares")
 SSE
-
+## cari cluster terbaik
 library(factoextra)
 fviz_nbclust(abln.nooutlier[,2:9], FUN = kmeans, method = "wss") +
   geom_vline(xintercept = 4, linetype = 2) +
   labs(subtitle = "Elbow Method")
+fviz_nbclust(abln.nooutlier[,2:9], kmeans, method = "silhouette")+
+  labs(subtitle = "Silhouette method")
+
+set.seed(1234)
+fviz_nbclust(abln.nooutlier[,2:9], kmeans, nstart = 50,  method = "gap_stat", nboot = 250, verbose = T)+
+  labs(subtitle = "Gap statistic method")
 
 ##CLUSTERING
 ####K-Means####
-cluster.kmeans <- kmeans(abln.nooutlier[,2:9], center = 4, nstart = 25)
+cluster.kmeans <- kmeans(abln.nooutlier[,2:9], center = 10, nstart = 50)
 cluster.kmeans$cluster
 
 ### Plot KMeans
@@ -125,11 +131,78 @@ plot(abln.nooutlier[,2:9],
      col = cluster.kmeans$cluster)
 fviz_cluster(cluster.kmeans, data = abln.nooutlier[,2:9])
 
+
+
 ##Mengetahui Karakteristik Cluster
 abln.character = data.frame(abln.nooutlier, cluster.kmeans$cluster)
 View(abln.character)
 #Scatter plot pake semua data
 aggregate(abln.character[-1],by=list(abln.character$cluster.kmeans.cluster),FUN=mean)
+
+
+#Mengetahui jumlah tiap M, F, I tiap cluster 10 cluster####
+#ini function buat ngitung, tinggal diganti sex numbernya aja ya / nama data frame clusternya buat ngitung
+count_parti_10 <- function(sex, cluster, sexNumber){
+  countF1 <- 0
+  countF2 <- 0
+  countF3 <- 0
+  countF4 <- 0
+  countF5 <- 0
+  countF6 <- 0
+  countF7 <- 0
+  countF8 <- 0
+  countF9 <- 0
+  countF10 <- 0
+  for (row in 1:nrow(abln.character)) {
+    if (sex[row] == sexNumber && cluster[row] == 1) {
+      countF1 <- countF1+1
+    }
+    else if (sex[row] == sexNumber && cluster[row] == 2) {
+      countF2 <- countF2+1
+    }
+    else if (sex[row] == sexNumber && cluster[row] == 3) {
+      countF3 <- countF3+1
+      
+    }
+    else if (sex[row] == sexNumber && cluster[row] == 4) {
+      countF4 <- countF4+1
+      
+    }
+    else if (sex[row] == sexNumber && cluster[row] == 5) {
+      countF5 <- countF5+1
+      
+    }
+    else if (sex[row] == sexNumber && cluster[row] == 6) {
+      countF6 <- countF6+1
+      
+    }
+    else if (sex[row] == sexNumber && cluster[row] == 7) {
+      countF7 <- countF7+1
+      
+    }
+    else if (sex[row] == sexNumber && cluster[row] == 8) {
+      countF8 <- countF8+1
+      
+    }
+    else if (sex[row] == sexNumber && cluster[row] == 9) {
+      countF9 <- countF9+1
+      
+    }
+    
+    else if (sex[row] == sexNumber && cluster[row] == 10) {
+      countF10 <- countF10+1
+      
+    }
+  }
+  result <- c(countF1,countF2,countF3,countF4,countF5,countF6,countF7,countF8,countF9,countF10)
+  names(result)<- c("Cluster 1", "Cluster2", "Cluster 3", "Cluster 4", "Cluster 5", "Cluster 6", "Cluster 7", "Cluster 8"
+                    , "Cluster 9", "Cluster 10")
+  
+  return(result)
+  
+}
+count_parti_10(abln.character$sex, abln.character$cluster.kmeans.cluster, 0) ####Keberadaan female di tiap cluster
+count_parti_10(abln.character$sex, abln.character$cluster.kmeans.cluster, 3) ####Keberadaan female di tiap cluster
 
 #Mengetahui jumlah tiap M, F, I tiap cluster####
 #ini function buat ngitung, tinggal diganti sex numbernya aja ya / nama data frame clusternya buat ngitung
@@ -147,7 +220,8 @@ for (row in 1:nrow(abln.character)) {
   }
   else if (sex[row] == sexNumber && cluster[row] == 3) {
     countF3 <- countF3+1
-  }else{
+  }
+  else if (sex[row] == sexNumber && cluster[row] == 4) {
     countF4 <- countF4+1
   }
 }
@@ -160,7 +234,7 @@ return(result)
 count_parti(abln.character$sex, abln.character$cluster.kmeans.cluster, 0) ####Keberadaan female di tiap cluster
 
 
-###METODE HIERARKI###
+###METODE HIERARKI####
 #Hierarki Agglomerative Clustering
 library(cluster)
 
@@ -169,8 +243,14 @@ cluster.agnes <- agnes(x=abln.nooutlier[,2:9],
                        stand = TRUE,
                        metric = "euclidean",
                        method = "average")
+tes <-fviz_nbclust(abln.nooutlier[,2:9], FUN = hcut, method = "wss") ###elbow method hclustter
+fviz_nbclust(abln.nooutlier[,2:9], FUN = hcut, method = "silhouette")
+set.seed(1234)
+##gap statistic hierarki
+fviz_nbclust(abln.nooutlier[,2:9], hcut, nstart = 50,  method = "gap_stat", nboot = 50, verbose = T)+
+  labs(subtitle = "Gap statistic method")
 
-
+tes$data
 
 #Menampilkan Hierarki Agglomerative Clustering
 library(factoextra)
