@@ -678,7 +678,7 @@ hvt.results5[[3]]$compression_summary
 
 ## Density Based eps 0.95
 library(dbscan)
-dbscan::kNNdistplot(abln.nooutlier, k = 4)
+dbscan::kNNdistplot(abln.nooutlier, k = 8)
 abline(h=0.95, lty = 2)
 
 library(fpc)
@@ -695,7 +695,7 @@ fviz_cluster(cluster.dbscan, geom = "point", data = abln.nooutlier)+ggtitle("K=4
 ## Density Based eps 0.9
 
 library(dbscan)
-dbscan::kNNdistplot(abln.nooutlier, k = 4)
+dbscan::kNNdistplot(abln.nooutlier, k = 8)
 abline(h=0.9, lty = 2)
 
 library(fpc)
@@ -711,7 +711,7 @@ fviz_cluster(cluster.dbscan, geom = "point", data = abln.nooutlier)+ggtitle("K=4
 
 ## Density Based eps 1
 library(dbscan)
-dbscan::kNNdistplot(abln.nooutlier, k = 4)
+dbscan::kNNdistplot(abln.nooutlier, k = 8)
 abline(h=1, lty = 2)
 
 library(fpc)
