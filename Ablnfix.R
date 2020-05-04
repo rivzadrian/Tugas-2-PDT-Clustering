@@ -674,52 +674,42 @@ hvt.results5 <- HVT(abln_num_fix,
                     error_metric = "mean")
 hvt.results5[[3]]$compression_summary
 
-## Density Based eps 0.95
+## Density Based eps 0.9 minpts 9#######################################################
 library(dbscan)
-dbscan::kNNdistplot(abln.nooutlier, k = 8)
-abline(h=0.95, lty = 2)
-
-library(fpc)
-cluster.dbscan <- dbscan(abln.nooutlier, eps=0.95, MinPts = 8.3)
-
-plot(cluster.dbscan, abln.nooutlier)
-
-plot(cluster.dbscan, abln.nooutlier[c(2:9)])
-
-### Visualisasi
-library(factoextra)
-fviz_cluster(cluster.dbscan, geom = "point", data = abln.nooutlier)+ggtitle("K=4")
-
-## Density Based eps 0.9
-
-library(dbscan)
-dbscan::kNNdistplot(abln.nooutlier, k = 8)
+dbscan::kNNdistplot(abalone.nooutlier, k = 8)
 abline(h=0.9, lty = 2)
 
 library(fpc)
-cluster.dbscan <- dbscan(abln.nooutlier, eps=0.9, MinPts = 8)
+cluster.dbscan <- dbscan(abalone.nooutlier, eps=0.9, MinPts = 9)
 
-plot(cluster.dbscan, abln.nooutlier)
+plot(cluster.dbscan, abalone.nooutlier)
 
-plot(cluster.dbscan, abln.nooutlier[c(2:9)])
+plot(cluster.dbscan, abalone.nooutlier[c(2:9)])
+
+cluster.dbscan <- dbscan::dbscan(abalone.nooutlier,0.9,9)
+cluster.dbscan
 
 ### Visualisasi
 library(factoextra)
-fviz_cluster(cluster.dbscan, geom = "point", data = abln.nooutlier)+ggtitle("K=4")
+fviz_cluster(cluster.dbscan, geom = "point", data = abalone.nooutlier)+ggtitle(" Density Based eps 0.9 minpts 9")
 
-## Density Based eps 1
+## Density Based eps 1 minpts 8#####################################################
 library(dbscan)
-dbscan::kNNdistplot(abln.nooutlier, k = 8)
+dbscan::kNNdistplot(abalone.nooutlier, k = 8)
 abline(h=1, lty = 2)
 
 library(fpc)
-cluster.dbscan <- dbscan(abln.nooutlier, eps=1, MinPts = 8)
+cluster.dbscan <- dbscan(abalone.nooutlier, eps=1, MinPts = 8)
 
-plot(cluster.dbscan, abln.nooutlier)
+plot(cluster.dbscan, abalone.nooutlier)
 
-plot(cluster.dbscan, abln.nooutlier[c(2:9)])
+plot(cluster.dbscan, abalone.nooutlier[c(2:9)])
+
+cluster.dbscan <- dbscan::dbscan(abalone.nooutlier,1,8)
+cluster.dbscan
 
 ### Visualisasi
 library(factoextra)
-fviz_cluster(cluster.dbscan, geom = "point", data = abln.nooutlier)+ggtitle("K=4")
+fviz_cluster(cluster.dbscan, geom = "point", data = abalone.nooutlier)+ggtitle("Density Based eps 1 minpts 8")
+
 
