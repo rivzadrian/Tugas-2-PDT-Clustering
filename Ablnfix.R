@@ -132,27 +132,32 @@ View(abln.character)
 aggregate(abln.character[-1],by=list(abln.character$cluster.kmeans.cluster),FUN=mean)
 
 #Mengetahui jumlah tiap M, F, I tiap cluster####
+#ini function buat ngitung, tinggal diganti sex numbernya aja ya / nama data frame clusternya buat ngitung
+count_parti <- function(sex, cluster, sexNumber){
 countF1 <- 0
 countF2 <- 0
 countF3 <- 0
 countF4 <- 0
 for (row in 1:nrow(abln.character)) {
-  if (abln.character$sex[row] == 0 && abln.character$cluster.kmeans.cluster[row] == 1) {
-    countM1 <- countM1+1
+  if (sex[row] == sexNumber && cluster[row] == 1) {
+    countF1 <- countF1+1
   }
-  else if (abln.character$sex[row] == 0 && abln.character$cluster.kmeans.cluster[row] == 2) {
-    countM2 <- countM2+1
+  else if (sex[row] == sexNumber && cluster[row] == 2) {
+    countF2 <- countF2+1
   }
-  else if (abln.character$sex[row] == 0 && abln.character$cluster.kmeans.cluster[row] == 3) {
-    countM3 <- countM3+1
+  else if (sex[row] == sexNumber && cluster[row] == 3) {
+    countF3 <- countF3+1
   }else{
-    countM4 <- countM4+1
+    countF4 <- countF4+1
   }
 }
-countF1
-countF2
-countF3
-countF4
+result <- c(countF1,countF2,countF3,countF4)
+names(result)<- c("Cluster 1", "Cluster2", "Cluster 3", "Cluster 4")
+
+return(result)
+
+}
+count_parti(abln.character$sex, abln.character$cluster.kmeans.cluster, 0) ####Keberadaan female di tiap cluster
 
 
 ###METODE HIERARKI###
