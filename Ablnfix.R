@@ -175,6 +175,14 @@ fviz_dend(cluster.agnes, cex = 0.4, k = 4)
 clust <- cutree(cluster.agnes, k = 4)
 fviz_cluster(list(data = abln.nooutlier[,2:9], cluster = clust))
 
+abln.hclust <- as.data.frame(clust)
+abln.hclust1.character = data.frame(abln.nooutlier, abln.hclust)
+View(abln.hclust1.character)
+
+
+
+
+
 
 ###metode ke - 2 lebih ringan tp agak beda dikit#####
 abln.euc <- dist(abln.nooutlier[,2:9], method = "euclidean")
@@ -721,6 +729,8 @@ hvt.results5 <- HVT(abln_num_fix,
                     error_metric = "mean")
 hvt.results5[[3]]$compression_summary
 
+
+hvt.results4
 ## Density Based eps 0.95
 library(dbscan)
 dbscan::kNNdistplot(abln.nooutlier, k = 8)
