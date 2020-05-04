@@ -32,75 +32,73 @@ g + geom_boxplot(varwidth=T, fill="plum") +
        caption="Source: mpg",
        x="Sex",
        y="Diameter") + ylim(0,0.75)
-
-
-
+########################################################################################################################################
 ##Ngambil data numerik####
 abln.numerik <- abln[2:9]
 View(abln.numerik)
 abln.numerikscale <- scale(abln.numerik)
 View(abln.numerikscale)
+########################################################################################################################################
+abalone_num <- abln
+abalone_sex <- abln
 
-#identifikasi outlier (1.8)####
+abalone_sex$sex <- as.character(abalone_sex$sex)
+abalone_sex$sex[abalone_sex$sex == "F"] <- "0"
+abalone_sex$sex[abalone_sex$sex == "M"] <- "1"
+abalone_sex$sex[abalone_sex$sex == "I"] <- "2"
+abalone_sex$sex <- as.numeric(abalone_sex$sex)
+
+##rownames(abalone_num) = make.names(abalone_num$sex, unique = T )
+##abalone_num$sex = NULL
+abalone_num <- scale(abalone_num[,2:9])
+abalone_num <- cbind(sex = abalone_sex$sex, abalone_num )
+View(abalone_num)
+
+#identifikasi outlier
 library(dbscan)
-dbscan::kNNdistplot(abln.numerikscale, k =  8)
-abline(h = 1.8, lty = 2)
-
-library(fpc)
-outlier.dbscan <- dbscan(abln.numerikscale, eps=1.8, MinPts = 8)
-outliers <- which(outlier.dbscan$cluster == 0)
-
-print(outliers)
-print(abln.numerikscale[outliers,])
-
-#identifikasi outlier (2)####
-library(dbscan)
-dbscan::kNNdistplot(abln.numerikscale, k =  8)
+dbscan::kNNdistplot(abalone_num, k =  8)
 abline(h = 2, lty = 2)
 
 library(fpc)
-outlier.dbscan <- dbscan(abln.numerikscale, eps=2, MinPts = 8)
-outliers.db <- which(outlier.dbscan$cluster == 0)
+outlier.dbscan <- dbscan(abalone_num, eps=2, MinPts = 8)
+outlier.db <- which(outlier.dbscan$cluster == 0)
 
-print(outliers)
-print(abln.numerikscale[outliers,])
+print(outlier.db)
+print(abalone_num[outlier.db,])
 
+
+##Visualisasi Outlier DBScan
 library("factoextra")
-fviz_cluster(outlier.dbscan, data = abln.numerikscale, stand = FALSE,
+fviz_cluster(outlier.dbscan, data = abalone_num, stand = FALSE,
              ellipse = FALSE, show.clust.cent = T,
              geom = "point",palette = "jco", ggtheme = theme_classic())
 
-##praktikum
-plot(abln.numerikscale)
-points(abln.numerikscale[outliers,1:8], col = "red", pch = "x", cex = 2)
 
-
-## Local Outlier Factor####
+## Local Outlier Factor
 library(DMwR)
-outlier.scores <- lofactor(abln.numerikscale, k=8)
+outlier.scores <- lofactor(abalone_num, k=8)
 plot(density(outlier.scores))
 
 outlier.lof <- order(outlier.scores, decreasing=TRUE)[1:5]
-print(outlier)
-print(abln.numerikscale[outlier,])
+print(outlier.lof)
+print(abalone_num[outlier.lof,])
 
-n = nrow(abln.numerikscale)
+n = nrow(abalone_num)
 pch <- rep(".", n)
 pch[outlier] <- "+"
 col <- rep("black", n)
 col[outlier] <- "red"
-pairs(abln.numerikscale, pch=pch, col=col)
+pairs(abalone_num, pch=pch, col=col)
 
-
-#hapus outlier####
-outlier <- c(outlier.lof, outliers.db )
+### Drop outlier
+outlier <- c(outlier.lof, outlier.db )
 outlier
 n_occur <- data.frame(table(outlier))
 n_occur[n_occur$Freq > 1,]
 outlier.fix = 0
 n_occur
-outlier.fix<-subset(outliers.db, outliers.db%in% outlier.lof)#men subset yang sama dr 2 vector
-abln.nooutlier <- abln.numerikscale[-(outlier.fix),]
+outlier.fix<-subset(outlier.db, outlier.db%in% outlier.lof)#men subset yang sama dr 2 vector
+abln.nooutlier <- abalone_num[-(outlier.fix),]
 
 ## Sum Squared Error (SSE)
 SSE <- sapply(1:9, function(k) {
