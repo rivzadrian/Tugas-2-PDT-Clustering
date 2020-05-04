@@ -675,3 +675,53 @@ hvt.results5 <- HVT(abln_num_fix,
                     distance_metric = "L1_Norm",
                     error_metric = "mean")
 hvt.results5[[3]]$compression_summary
+
+## Density Based eps 0.95
+library(dbscan)
+dbscan::kNNdistplot(abln.nooutlier, k = 4)
+abline(h=0.95, lty = 2)
+
+library(fpc)
+cluster.dbscan <- dbscan(abln.nooutlier, eps=0.95, MinPts = 8.3)
+
+plot(cluster.dbscan, abln.nooutlier)
+
+plot(cluster.dbscan, abln.nooutlier[c(2:9)])
+
+### Visualisasi
+library(factoextra)
+fviz_cluster(cluster.dbscan, geom = "point", data = abln.nooutlier)+ggtitle("K=4")
+
+## Density Based eps 0.9
+
+library(dbscan)
+dbscan::kNNdistplot(abln.nooutlier, k = 4)
+abline(h=0.9, lty = 2)
+
+library(fpc)
+cluster.dbscan <- dbscan(abln.nooutlier, eps=0.9, MinPts = 8)
+
+plot(cluster.dbscan, abln.nooutlier)
+
+plot(cluster.dbscan, abln.nooutlier[c(2:9)])
+
+### Visualisasi
+library(factoextra)
+fviz_cluster(cluster.dbscan, geom = "point", data = abln.nooutlier)+ggtitle("K=4")
+
+## Density Based eps 1
+library(dbscan)
+dbscan::kNNdistplot(abln.nooutlier, k = 4)
+abline(h=1, lty = 2)
+
+library(fpc)
+cluster.dbscan <- dbscan(abln.nooutlier, eps=1, MinPts = 8)
+
+plot(cluster.dbscan, abln.nooutlier)
+
+plot(cluster.dbscan, abln.nooutlier[c(2:9)])
+
+### Visualisasi
+library(factoextra)
+fviz_cluster(cluster.dbscan, geom = "point", data = abln.nooutlier)+ggtitle("K=4")
+
