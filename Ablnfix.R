@@ -52,15 +52,15 @@ abalone_sex$sex <- as.numeric(abalone_sex$sex)
 ##abalone_num$sex = NULL
 abalone_num <- scale(abalone_num[,2:9])
 abalone_num <- cbind(sex = abalone_sex$sex, abalone_num )
-View(abalone_num)
+#View(abalone_num)
 
 #identifikasi outlier
 library(dbscan)
-dbscan::kNNdistplot(abalone_num, k =  8)
+dbscan::kNNdistplot(abalone_num[,2:9], k =  8)
 abline(h = 2, lty = 2)
 
 library(fpc)
-outlier.dbscan <- dbscan(abalone_num, eps=2, MinPts = 8)
+outlier.dbscan <- dbscan(abalone_num[,2:9], eps=2, MinPts = 8)
 outlier.db <- which(outlier.dbscan$cluster == 0)
 
 print(outlier.db)
@@ -69,14 +69,14 @@ print(abalone_num[outlier.db,])
 
 ##Visualisasi Outlier DBScan
 library("factoextra")
-fviz_cluster(outlier.dbscan, data = abalone_num, stand = FALSE,
+fviz_cluster(outlier.dbscan, data = abalone_num[,2:9], stand = FALSE,
              ellipse = FALSE, show.clust.cent = T,
              geom = "point",palette = "jco", ggtheme = theme_classic())
 
 
 ## Local Outlier Factor
 library(DMwR)
-outlier.scores <- lofactor(abalone_num, k=8)
+outlier.scores <- lofactor(abalone_num[,2:9], k=8)
 plot(density(outlier.scores))
 
 outlier.lof <- order(outlier.scores, decreasing=TRUE)[1:5]
@@ -101,8 +101,9 @@ outlier.fix<-subset(outlier.db, outlier.db%in% outlier.lof)#men subset yang sama
 abln.nooutlier <- abalone_num[-(outlier.fix),]
 
 ## Sum Squared Error (SSE)
+
 SSE <- sapply(1:9, function(k) {
-  kmeans(abln.nooutlier, centers = k, nstart = 25)$tot.withinss
+  kmeans(abln.nooutlier[,2:9], centers = k, nstart = 50)$tot.withinss
 })
 
 plot(1:9, SSE, type="b", xlab = "k", 
@@ -110,31 +111,61 @@ plot(1:9, SSE, type="b", xlab = "k",
 SSE
 
 library(factoextra)
-fviz_nbclust(abln.nooutlier, FUN = kmeans, method = "wss") +
+fviz_nbclust(abln.nooutlier[,2:9], FUN = kmeans, method = "wss") +
   geom_vline(xintercept = 4, linetype = 2) + 
   labs(subtitle = "Elbow Method")
 
 ##CLUSTERING
 ####K-Means####
-cluster.kmeans <- kmeans(abln.nooutlier, center = 4, nstart = 25)
+cluster.kmeans <- kmeans(abln.nooutlier[,2:9], center = 4, nstart = 25)
 cluster.kmeans$cluster
 
 ### Plot KMeans
-plot(abln.nooutlier,
+plot(abln.nooutlier[,2:9],
      col = cluster.kmeans$cluster)
+fviz_cluster(cluster.kmeans, data = abln.nooutlier[,2:9])
 
 ##Mengetahui Karakteristik Cluster
 abln.character = data.frame(abln.nooutlier, cluster.kmeans$cluster)
 View(abln.character)
+#Scatter plot pake semua data
 aggregate(abln.character[-1],by=list(abln.character$cluster.kmeans.cluster),FUN=mean)
+
+#Mengetahui jumlah tiap M, F, I tiap cluster####
+countF1 <- 0
+countF2 <- 0
+countF3 <- 0
+countF4 <- 0
+for (row in 1:nrow(abln.character)) {
+  if (abln.character$sex[row] == 0 && abln.character$cluster.kmeans.cluster[row] == 1) {
+    countM1 <- countM1+1
+  } 
+  else if (abln.character$sex[row] == 0 && abln.character$cluster.kmeans.cluster[row] == 2) {
+    countM2 <- countM2+1
+  }
+  else if (abln.character$sex[row] == 0 && abln.character$cluster.kmeans.cluster[row] == 3) {
+    countM3 <- countM3+1
+  }else{
+    countM4 <- countM4+1
+  }
+}
+countF1
+countF2
+countF3
+countF4
+
 
 ###METODE HIERARKI###
 #Hierarki Agglomerative Clustering
 library(cluster)
-cluster.agnes <- agnes(x=abln.nooutlier,
+
+set.seed(1234)
+cluster.agnes <- agnes(x=abln.nooutlier[,2:9],
                        stand = TRUE,
                        metric = "euclidean",
                        method = "average")
+
+
 
 #Menampilkan Hierarki Agglomerative Clustering
 library(factoextra)
@@ -142,7 +173,23 @@ fviz_dend(cluster.agnes, cex = 0.4, k = 4)
 
 #Plot Data Point Agglomerative Clustering
 clust <- cutree(cluster.agnes, k = 4)
-fviz_cluster(list(data = abln.nooutlier, cluster = clust))
+fviz_cluster(list(data = abln.nooutlier[,2:9], cluster = clust))
+
+
+###metode ke - 2 lebih ringan tp agak beda dikit#####
+abln.euc <- dist(abln.nooutlier[,2:9], method = "euclidean")
+abln.out.hcl <- hclust(abln.euc, method = "complete")
+abln.cut <- cutree(abln.out.hcl, k = 4)
+plot(abln.out.hcl, cex = 0.6, main = "Dendogram of pokemon dataset")
+rect.hclust(abln.out.hcl, k = 4, border = 2:5)
+fviz_cluster(list(data = abln.nooutlier[,2:9], cluster = abln.cut), main = "Scatter of Hierarchical cluster")
+
+abln.hclust <- as.data.frame(abln.cut)
+abln.hclust1.character = data.frame(abln.nooutlier, abln.hclust)
+View(abln.hclust1.character)
+
+
+
 
 #Hierarki Divisive Clustering
 cluster.diana <- diana(x=abln.nooutlier,
