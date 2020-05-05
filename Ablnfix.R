@@ -892,3 +892,52 @@ cluster.dbscan
 ### Visualisasi
 library(factoextra)
 fviz_cluster(cluster.dbscan, geom = "point", data = abalone.nooutlier)+ggtitle("Density Based eps 1 minpts 8")
+       
+##SSE DBScan
+library(factoextra)
+fviz_nbclust(abln.nooutlier[,2:9], FUN = dbscan , method = "wss") +
+  geom_vline(xintercept = 4, linetype = 2) +
+  labs(subtitle = "Elbow Method")
+
+##Mengetahui Karakteristik cluster abalone DBScan
+abln.character = data.frame(abln.nooutlier, cluster.dbscan$cluster)
+View(abln.character)
+#Scatter plot pake semua data
+aggregate(abln.character[-1],by=list(abln.character$cluster.dbscan.cluster),FUN=mean)
+
+#Mengetahui jumlah tiap M, F, I tiap cluster####
+#ini function buat ngitung, tinggal diganti sex numbernya aja ya / nama data frame clusternya buat ngitung
+count_parti <- function(sex, cluster, sexNumber){
+  countF1 <- 0
+  countF2 <- 0
+  countF3 <- 0
+  countF4 <- 0
+  for (row in 1:nrow(abln.character)) {
+    if (sex[row] == sexNumber && cluster[row] == 1) {
+      countF1 <- countF1+1
+    }
+    else if (sex[row] == sexNumber && cluster[row] == 2) {
+      countF2 <- countF2+1
+    }
+    else if (sex[row] == sexNumber && cluster[row] == 3) {
+      countF3 <- countF3+1
+    }
+    else if (sex[row] == sexNumber && cluster[row] == 4) {
+      countF4 <- countF4+1
+    }
+  }
+  result <- c(countF1,countF2,countF3,countF4)
+  names(result)<- c("Cluster 1", "Cluster2", "Cluster 3", "Cluster 4")
+  
+  return(result)
+  
+}
+count_parti(abln.character$sex, abln.character$cluster.dbscan.cluster, 2) ####Keberadaan female di tiap cluster
+       
+##sillhouette DBScan####
+install.packages("tidyverse")
+library(tidyverse)  # data manipulation
+library(cluster)    # clustering algorithms
+library(factoextra)
+sildb <- silhouette(cluster.dbscan$cluster, dist(abln.nooutlier[,2:9]))
+fviz_silhouette(sildb)
