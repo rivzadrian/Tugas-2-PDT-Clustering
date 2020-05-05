@@ -6,6 +6,11 @@ colnames(abln) <- c("sex", "length", "diameter", "height", "wholeWeight", "shuck
                     "shellWeight","rings")
 
 ##eksplorasi data####
+str(abln)
+dim(abln)
+head(abln)
+tail(abln)
+summary(abln)
 ##heatmap
 library(ggcorrplot)
 corr <- round(cor(abln[,c(2,3,4,5,6,7,8,9)]), 2)
@@ -18,11 +23,38 @@ ggcorrplot(corr, hc.order = TRUE,
            title="Correlogram of Abalone",
            ggtheme=theme_bw)
 ##plot
-plot(x=abln$sex, y=abln$y, xlab = "sex", ylab="Probabilitas banyaknya jenis kelamin", ylim=c(0,3))
+plot(x=abln$sex, y=abln$rings, xlab = "sex", ylab="Rings")
+
+count <- table(abln$rings)
+barplot(count, main = " jumlah rings")
+
+
+#piechart####
+library(ggplot2)
+theme_set(theme_classic())
+
+# Source: Frequency table
+df <- as.data.frame(table(abln$sex))
+colnames(df) <- c("class", "freq")
+pie <- ggplot(df, aes(x = "", y=freq, fill = factor(class))) + 
+  geom_bar(width = 1, stat = "identity") +
+  theme(axis.line = element_blank(), 
+        plot.title = element_text(hjust=0.5)) + 
+  labs(fill="class", 
+       x=NULL, 
+       y=NULL, 
+       title="Pie Chart of sex", 
+       caption="")
+
+pie + coord_polar(theta = "y", start=0)
+
 
 #Mencari duplikasi data
 library(dplyr)
+library(Amelia)
 which(duplicated(abln))
+missmap(abln)
+sapply(pokemon, function(x) sum(is.na(x)))
 
 # Plot box sex diameter
 g <- ggplot(abln, aes(sex, diameter))
@@ -123,8 +155,17 @@ fviz_nbclust(abln.nooutlier[,2:9], kmeans, nstart = 50,  method = "gap_stat", nb
 
 ##CLUSTERING
 ####K-Means####
-cluster.kmeans <- kmeans(abln.nooutlier[,2:9], center = 10, nstart = 50)
+cluster.kmeans <- kmeans(abln.nooutlier[,2:9], center = 4, nstart = 50)
 cluster.kmeans$cluster
+
+
+##sillhouette####
+library(tidyverse)  # data manipulation
+library(cluster)    # clustering algorithms
+library(factoextra)
+silpok <- silhouette(cluster.kmeans$cluster, dist(abln.nooutlier[,2:9]))
+fviz_silhouette(silpok)
+
 
 ### Plot KMeans
 plot(abln.nooutlier[,2:9],
@@ -202,7 +243,7 @@ count_parti_10 <- function(sex, cluster, sexNumber){
   
 }
 count_parti_10(abln.character$sex, abln.character$cluster.kmeans.cluster, 0) ####Keberadaan female di tiap cluster
-count_parti_10(abln.character$sex, abln.character$cluster.kmeans.cluster, 3) ####Keberadaan female di tiap cluster
+count_parti_10(abln.character$sex, abln.character$cluster.kmeans.cluster, 2) ####Keberadaan female di tiap cluster
 
 #Mengetahui jumlah tiap M, F, I tiap cluster####
 #ini function buat ngitung, tinggal diganti sex numbernya aja ya / nama data frame clusternya buat ngitung
